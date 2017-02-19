@@ -1,0 +1,118 @@
+<template>
+    <div class='list'>
+        <div>
+            <image src="{{picurl}}" class="self-icon"></image>
+            <image src="https://gw.alicdn.com/tps/TB1J7YDLXXXXXXHXpXXXXXXXXXX-48-48.png" class="self-sex"
+                   if={{female}}></image>
+            <image src="https://gw.alicdn.com/tps/TB1renfLXXXXXblaXXXXXXXXXXX-48-48.png" class="self-sex"
+                   if={{!female}}></image>
+        </div>
+        <div class="self-info" if="{{hasInfo}}">
+            <div class='contact-container'>
+                <text class="self-name">{{uname}}</text>
+                <text class="self-tel">{{utel}}</text>
+            </div>
+            <div class="address-container">
+                <text class="self-address">{{uaddress}}</text>
+            </div>
+        </div>
+        <div class="no-self-info" if="{{!hasInfo}}">
+            <text class='no-reminder'>请填写个人信息</text>
+        </div>
+        <div class="arr-right">
+            <image src="https://gw.alicdn.com/tps/TB18riSMVXXXXa2apXXXXXXXXXX-17-31.png" class="arr-r"></image>
+        </div>
+    </div>
+</template>
+<style>
+    .list {
+        height: 180px;
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .self-sex {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 32px;
+        height: 32px;
+    }
+
+    .self-icon {
+        width: 98px;
+        height: 100px;
+        border-radius: 50px;
+        margin-left: 30px;
+    }
+
+    .self-info {
+        flex-direction: column;
+        margin-left: 33px;
+    }
+
+    .contact-container {
+        height: 32px;
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .self-name {
+        font-size: 32px;
+        color: #444444;
+    }
+
+    .self-tel {
+        font-size: 28px;
+        color: #999999;
+        margin-left: 30px;
+    }
+
+    .address-container {
+        margin-top: 20px;
+    }
+
+    .self-address {
+        font-size: 28px;
+        color: #999999;
+    }
+
+    .no-self-info {
+        margin-left: 33px;
+    }
+
+    .no-reminder {
+        font-size: 32px;
+        color: #CCCCCC;
+    }
+
+    .arr-right {
+        position: absolute;
+        right: 30px;
+        bottom: 75px;
+        /*width: 21px;*/
+        /*height: 21px;*/
+        /*border: 2px solid #CCCCCC;*/
+        /*border-left: none;*/
+        /*border-bottom: none;*/
+        /*-webkit-transform: rotate(45deg);*/
+        /*transform: rotate(45deg);*/
+    }
+    .arr-r{
+        width: 15px;
+        height: 29px;
+    }
+</style>
+
+<script>
+    module.exports = {
+        data: {
+            hasInfo: true,
+            female: true,
+            picurl: 'https://gw.alicdn.com/tps/TB1mYDWLXXXXXc7XXXXXXXXXXXX-265-265.png',
+            uname: '小马',
+            utel: '15677889900',
+            uaddress: '昆明理工大学恬园7-312'
+        }
+    }
+</script>

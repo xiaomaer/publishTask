@@ -1,0 +1,90 @@
+<template>
+   <div class="container">
+       <div class="imageShow border-{{color}}">
+         <img src="{{picUrl}}" style="width:{{imgwidth}};height:{{imgheight}}"/>
+         <div class="triangle" if={{selected}}>
+                <image src="https://gw.alicdn.com/tps/TB1Zz1UMVXXXXXVaFXXXXXXXXXX-18-13.png" class="right-icon"></image>
+         </div>
+       </div>
+        <div class="imageTitle money-{{color}}">
+            <text class="icon">¥</text>
+            <text class="money">{{money}}</text>
+        </div>
+   </div>
+
+</template>
+<style>
+.container{
+width:150px;
+margin-top:30px;
+margin-right:30px;
+}
+.imageShow{
+width:150px;
+height:150px;
+border-radius: 6px;
+justify-content:center;
+align-items:center;
+}
+.border-gray{
+    border-width: 1px;
+    border-style: solid;
+    border-color: #DDDDDD;
+}
+.border-orange{
+    border-width: 2px;
+    border-style: solid;
+    border-color: #FF9800;
+    overflow:hidden;
+}
+.imageTitle{
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-end;
+    margin-top:15px;
+}
+.money-gray{
+ color:#444444;
+}
+.money-orange{
+color:#FF9800;
+}
+.icon{
+font-size:24px;
+}
+.money{
+font-size:30px;
+margin-left:4px;
+}
+.triangle{
+position:absolute;
+bottom:0;
+right:0;
+width:0;
+height:0;
+border-width:20px;
+border-style:solid;
+border-right-color:#FF9800;
+border-bottom-color:#FF9800;
+border-left-color:transparent;
+border-top-color:transparent;
+}
+.right-icon{
+    position: absolute;
+    bottom: -15px;
+   width:16px;
+   height:11px;
+}
+</style>
+<script>
+module.exports={
+    data:{
+    picUrl:'https://img.alicdn.com/tps/i2/TB1CpD7IXXXXXbSXXXXUAkPJpXX-87-87.png',
+    imgwidth:110,
+    imgheight:110,
+    money:2,
+    color:'orange',
+    selected:true
+    }
+}
+</script>

@@ -1,0 +1,230 @@
+<template>
+    <div class="container">
+         <div class="self-image">
+              <image src='https://img.alicdn.com/tps/i3/TB1DGkJJFXXXXaZXFXX07tlTXXX-200-200.png' class='upload-image'></image>
+              <text class='reminder'>上传头像</text>
+         </div>
+         <list class="list">
+            <cell class="row">
+                  <image src="https://img.alicdn.com/tps/i3/TB1DGkJJFXXXXaZXFXX07tlTXXX-200-200.png" class="icon"></image>
+                  <div class="input-area no-button">
+                        <input type="text" placeholder="姓名限5个字内" class="input-text" value="{{name}}" oninput="getUserName" onchange="getUserName"></input>
+                  </div>
+            </cell>
+             <cell class="row">
+                    <image src="https://img.alicdn.com/tps/i3/TB1DGkJJFXXXXaZXFXX07tlTXXX-200-200.png" class="icon"></image>
+                   <div class="input-area has-btn">
+                          <div class="btn-sex mr btn-sex-{{male}}" onclick="selectMale">
+                                <text class="btn-sex-text text-{{male}}">男生</text>
+                          </div>
+                          <div class="btn-sex btn-sex-{{female}}" onclick="selectFemale">
+                                 <text class="btn-sex-text text-{{female}}">女生</text>
+                          </div>
+                   </div>
+              </cell>
+
+            <cell class="row">
+                   <image src="https://img.alicdn.com/tps/i3/TB1DGkJJFXXXXaZXFXX07tlTXXX-200-200.png" class="icon"></image>
+                   <div class="input-area no-button">
+                         <input type="text" placeholder="宿舍楼或寝室号等" class="input-text" value="{{address}}" oninput="getUserAddress" onchange="getUserAddress"></input>
+                   </div>
+            </cell>
+             <cell class="row">
+                    <image src="https://img.alicdn.com/tps/i3/TB1DGkJJFXXXXaZXFXX07tlTXXX-200-200.png" class="icon"></image>
+                    <div class="input-area no-button">
+                         <input type="text" placeholder="手机号码" class="input-text" value="{{tel}}" oninput="getUserTel" onchange="getUserTel"></input>
+                    </div>
+             </cell>
+         </list>
+         <div class="btn-save" onclick="saveData">
+              <text class="btn-text">保存</text>
+         </div>
+    </div>
+</template>
+<style>
+.self-image{
+height:300px;
+justify-content:center;
+align-items:center;
+}
+.upload-image{
+height:100px;
+width:100px;
+border-radius:50px;
+}
+.reminder{
+font-size:28px;
+color:#4A4A4A;
+margin-top:20px;
+}
+  .row{
+     height:120px;
+     flex-direction:row;
+     align-items:center;
+  }
+  .icon{
+     width:30px;
+     height:30px;
+     margin-left:40px;
+  }
+  .input-area{
+     width:610px;
+     height:120px;
+     margin-left:30px;
+     border-bottom-width: 1px;
+     border-bottom-color: #CCCCCC;
+  }
+  .no-button{
+     justify-content:center;
+  }
+  .input-text{
+    font-size:28px;
+    color:#4A4A4A;
+    placeholder-color:#999999;
+    border:none;
+    outline:none;
+  }
+  .btn-save{
+  position:absolute;
+  bottom:30px;
+  left:30px;
+  width:690px;
+  height: 90px;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  background-color: #FF9800;
+  border-radius: 6px;
+  }
+  .btn-text{
+  font-size: 36px;
+  }
+  .has-btn{
+   flex-direction:row;
+   align-items:center;
+  }
+  .btn-sex{
+   width:110px;
+   height:50px;
+   align-items:center;
+   justify-content:center;
+    border-radius: 100px;
+   }
+   .btn-sex-default{
+        background-color: #FFFFFF;
+       border-width:1px;
+       border-color:#DDDDDD;
+   }
+   .btn-sex-active{
+       background-color: #FF9800;
+   }
+   .btn-sex-text{
+     font-size:26px;
+   }
+   .text-default{
+    color:#999999;
+   }
+   .text-active{
+     color:#FFFFFF;
+   }
+   .mr{
+   margin-right:30px;
+   }
+</style>
+<script>
+  var stream=require('@weex-module/stream');
+  var modal = require('@weex-module/modal');
+  var navigator = require('@weex-module/navigator');
+
+//var utils=require('../src/util/util.js');
+
+module.exports={
+     data:{
+        name:'',
+        address:'',
+        tel:'',
+        sex:'女',
+        female:'default',
+        male:'default'
+     },
+     created:function(){
+         var userId=this.getUrlParam('userId');
+         //console.log(userId);
+         //请求数据,渲染个人信息
+         if(userId){
+            this.name='张雅思';
+            this.tel='15677889900';
+            this.address='河北省邯郸市邱县';
+            if(this.sex==='男'){
+                this.male='active';
+                this.female='default';
+            }else{
+                this.female='active';
+                this.male='default';
+            }
+
+         }
+     },
+     methods:{
+          //获取url传来的参数
+          getUrlParam:function(key) {
+               var reg = new RegExp('[?|&]' + key + '=([^&]+)');
+               var match = location.search.match(reg);
+               return match && match[1];
+          },
+          validate:function(value){
+              return (value===""||value===null||value===undefined)?false:true;
+          },
+          saveData:function(){
+              //判断信息是否为空
+              if(this.validate(this.name)&&this.validate(this.address)&&this.validate(this.tel)&&this.validate(this.sex)){
+                    //点击保存后,请求存储数据
+                    stream.fetch({
+                        method:'GET',
+                        url:'',
+                        type:'jsonp',
+                        header:'',
+                        body:''
+                    },function(result){
+
+                    },function(error){
+
+                    });
+                    //保存成功后,返回上一页
+                    var params={
+                        url:'index.html?page=dist/publishTask.js',
+                        animated:'true'
+                    };
+                    navigator.push(params,function(){});
+
+              }else{
+                    modal.toast({'message': '信息不能为空!', 'duration': 1});
+              }
+          },
+          selectMale:function(){
+             this.male="active";
+             this.female="default";
+             this.sex='男';
+          },
+          selectFemale:function(){
+            this.female="active";
+            this.male="default";
+            this.sex='女';
+          },
+          getUserName:function(event){
+                 this.name=event.value;
+                 console.log(this.name);
+          },
+          getUserAddress:function(event){
+                 this.address=event.value;
+                 console.log(this.address);
+          },
+          getUserTel:function(event){
+                 this.tel=event.value;
+                 console.log(this.tel);
+          }
+     }
+
+};
+
+</script>

@@ -1,0 +1,143 @@
+<template>
+    <div class='content'>
+        <wxc-navpage data-role="none" height={{navBarHeight}} background-color="#FF9800" title={{title}}
+                     title-color="white" left-item-title="返回" left-item-color="white"
+                     right-item-src="http://gtms02.alicdn.com/tps/i2/TB1ED7iMpXXXXXEXXXXWA_BHXXX-48-48.png">
+        </wxc-navpage>
+        <a href="index.html?page=dist/publishTask.js">
+            <text class='fcolor'>点击返回发布任务页面.</text>
+        </a>
+        <div style="flex-direction: column;">
+            <wxc-tabbar tab-items={{tabItems}}></wxc-tabbar>
+        </div>
+    </div>
+</template>
+<style>
+    .content {
+        align-items: center;
+        justify-content: center;
+    }
+
+    .fcolor {
+        font-size: 28px;
+        color: #333333;
+    }
+</style>
+<script>
+    require('weex-components');
+    var modal = require('@weex-module/modal'),
+            navigator = require('@weex-module/navigator');
+    module.exports = {
+        data: {
+            navBarHeight: 80,
+            title: '任务详情',
+            baseURL: '',
+            tabItems: [
+                {
+                    index: 0,
+                    title: 'tab1',
+                    titleColor: '#000000',
+                    icon: '',
+                    image: 'http://gtms01.alicdn.com/tps/i1/TB1qw.hMpXXXXagXXXX9t7RGVXX-46-46.png',
+                    selectedImage: 'http://gtms04.alicdn.com/tps/i4/TB16jjPMpXXXXazXVXX9t7RGVXX-46-46.png',
+                    src: 'dist/selfInfo.js?itemId=tab1',
+                    visibility: 'visible',
+                },
+                {
+                    index: 1,
+                    title: 'tab2',
+                    titleColor: '#000000',
+                    icon: '',
+                    image: 'http://gtms03.alicdn.com/tps/i3/TB1LEn9MpXXXXaUXpXX9t7RGVXX-46-46.png',
+                    selectedImage: 'http://gtms02.alicdn.com/tps/i2/TB1qysbMpXXXXcnXXXX9t7RGVXX-46-46.png',
+                    src: 'dist/selfInfo.js?itemId=tab2',
+                    visibility: 'hidden',
+                },
+                {
+                    index: 2,
+                    title: 'tab3',
+                    titleColor: '#000000',
+                    icon: '',
+                    image: 'http://gtms01.alicdn.com/tps/i1/TB1B0v5MpXXXXcvXpXX9t7RGVXX-46-46.png',
+                    selectedImage: 'http://gtms04.alicdn.com/tps/i4/TB1NxY5MpXXXXcrXpXX9t7RGVXX-46-46.png',
+                    src: 'dist/selfInfo.js?itemId=tab3',
+                    visibility: 'hidden',
+                }
+            ]
+        },
+        created: function () {
+            this.$getConfig(function (config) {
+                var env = config.env;
+                if (env.platform == 'iOS') {
+                    var scale = env.scale;
+                    var deviceWidth = env.deviceWidth / scale;
+                    this.navBarHeight = 64.0 * 750.0 / deviceWidth;
+                }
+            }.bind(this));
+
+            //debugger;
+            var bundleUrl = this.$getConfig().bundleUrl;//http://localhost:63342/publishTask/index.html?page=dist/taskDetail.js
+            bundleUrl = new String(bundleUrl);
+            //console.log('hit', bundleUrl);
+            var nativeBase;
+            var isAndroidAssets = bundleUrl.indexOf('file://assets/') >= 0;
+
+            var isiOSAssets = bundleUrl.indexOf('file:///') >= 0 && bundleUrl.indexOf('WeexDemo.app') > 0;
+            if (isAndroidAssets) {
+                nativeBase = 'file://assets/';
+            }
+            else if (isiOSAssets) {
+                // file:///var/mobile/Containers/Bundle/Application/{id}/WeexDemo.app/
+                // file:///Users/{user}/Library/Developer/CoreSimulator/Devices/{id}/data/Containers/Bundle/Application/{id}/WeexDemo.app/
+                nativeBase = bundleUrl.substring(0, bundleUrl.lastIndexOf('/') + 1);
+            }
+            else {
+                var host = 'localhost:12580';
+                var matches = /\/\/([^\/]+?)\//.exec(this.$getConfig().bundleUrl);
+                if (matches && matches.length >= 2) {
+                    host = matches[1];
+                }
+                nativeBase = 'http://' + host + '/';
+            }
+            var h5Base = './index.html?page=';
+            // in Native
+            var base = nativeBase;
+            if (typeof window === 'object') {
+                // in Browser or WebView
+                base = h5Base;
+            }
+            this.baseURL = base;
+
+            this.$on('naviBar.rightItem.click', function (e) {
+                modal.toast({
+                    'message': '扫一扫',
+                    'duration': 2
+                });
+            });
+
+            this.$on('naviBar.leftItem.click', function (e) {
+                var params = {
+                    'url': this.baseURL + 'dist/publishTask.js?test=1',
+                    'animated': 'true',
+                };
+                navigator.push(params, function () {
+
+                });
+            });
+            //点击底部tab切换
+            this.$on('tabBar.onClick', function (e) {
+                var detail = e.detail,
+                        index= parseInt(detail.index),
+                        tabItem = this.tabItems[index];
+                var params = {
+                    'url': this.baseURL + tabItem.src,
+                    'animated': 'true',
+                };
+                navigator.push(params, function () {
+
+                });
+                console.log('tabBar.onClick ' + detail.index);
+            });
+        }
+    }
+</script>

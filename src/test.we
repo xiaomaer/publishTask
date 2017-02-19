@@ -1,0 +1,33 @@
+<template>
+   <div class="content">
+       <text onclick="handler('arg1', $event)" class="text" test="test">{{value}}</text>
+   </div>
+</template>
+<style>
+    .content{
+        align-items: center;
+        justify-content: center;
+    }
+    .text{
+        font-size:28px;
+        color:black;
+    }
+</style>
+
+<script>
+    module.exports = {
+        data:{
+            value:'测试带参数函数和属性设置'
+        },
+        methods: {
+            handler: function (arg1, e) {//传参
+                // TODO
+                debugger;
+                var target=e.target;
+                target.attr.test="wewrewr";//设置自定义属性值
+                console.log(target.attr.test);//获取自定义属性
+                console.log(arg1);
+            }
+        }
+    }
+</script>

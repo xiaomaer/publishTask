@@ -1,0 +1,402 @@
+<template>
+    <scroller>
+        <xm-header hasInfo="{{hasInfo}}" female="{{female}}" picurl="{{picurl}}" uname="{{uname}}" utel="{{utel}}"
+                   uaddress="{{uaddress}}" onclick="addSelfInfo"></xm-header>
+        <div class="gap"></div>
+        <div class="panel">
+            <div>
+                <text class="title-name">捎句话</text>
+            </div>
+            <div class="btn-container">
+                <div repeat="{{tags}}" data-id="{{btnId}}" data-index="{{$index}}" onclick="selectTag">
+                    <xm-button id="{{btnId}}" default="{{state}}" value="{{btnValue}}" class="btn-tag"></xm-button>
+                </div>
+            </div>
+            <div>
+                <input type="text" placeholder="时间/地点/内容，填写清楚哦~限100字" value="{{inputMessage}}" class="input-container"
+                       oninput="inputText" onchange="inputText"/>
+                <div class="btn-package">
+                    <text class="btn-content">@我的包裹侠</text>
+                </div>
+            </div>
+        </div>
+        <div class="panel">
+            <div>
+                <text class="title-name">顺便带</text>
+            </div>
+            <div class="goods">
+                <div data-id="{{picId}}" repeat="{{goods}}" onclick="selectGoods">
+                    <xm-image id="{{picId}}" picUrl="{{src}}" imgwidth="{{width}}" imgheight="{{height}}"
+                              money="{{price}}" color="{{showColor}}" selected="{{selected}}"></xm-image>
+                </div>
+            </div>
+        </div>
+        <div class="panel">
+            <div>
+                <text class="title-name">感谢红包</text>
+            </div>
+            <div class="total-money">
+                <text class="money-value">{{totalfees}}</text>
+                <text class="money-unit">元</text>
+            </div>
+            <div class="money-detail">
+                <text class="details">（含跑腿费{{tip}}元，商品费{{goodfees}}元）</text>
+            </div>
+        </div>
+        <div class="btn-call" onclick="publishTask">
+            <text class="call-text">召唤包裹侠</text>
+        </div>
+    </scroller>
+</template>
+
+<style>
+
+    .gap {
+        height: 20px;
+        background-color: #F6F6F6;
+    }
+
+    .panel {
+        padding-top: 40px;
+        padding-left: 30px;
+        padding-right: 30px;
+    }
+
+    .title-name {
+        font-size: 30px;
+        color: #2B3B53;
+    }
+
+    .btn-container {
+        flex-direction: row;
+        flex-wrap: wrap;
+        margin-top: 30px;
+    }
+
+    .btn-tag {
+        margin-right: 20px;
+        margin-bottom: 20px;
+    }
+
+    .btn-call {
+        position: fixed;
+        bottom: 30px;
+        left: 30px;
+        width: 690px;
+        height: 90px;
+        align-items: center;
+        justify-content: center;
+        background-color: #FF9800;
+        border-radius: 6px;
+    }
+
+    .call-text {
+        font-size: 36px;
+        color: #FFFFFF;
+    }
+
+    .input-container {
+        width: 690px;
+        height: 180px;
+        font-size: 28px;
+        placeholder-color: #A5A5A5;
+        color: #2B3B53;
+        border: none;
+        background-color: #F6F6F6;
+        border-radius: 6px;
+    }
+
+    .btn-package {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        width: 180px;
+        height: 60px;
+        justify-content: center;
+        align-items: center;
+        background-color: #FF9800;
+        border-radius: 6px;
+    }
+
+    .btn-content {
+        color: #FFFFFF;
+        font-size: 26px;
+    }
+
+    .goods {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .total-money {
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        color: #444444;
+        margin-top: 50px;
+    }
+
+    .money-value {
+        /*height: 80px;*/
+        font-size: 100px;
+        margin-right: 16px;
+    }
+
+    .money-unit {
+        font-size: 28px;
+    }
+
+    .money-detail {
+        margin-top: 30px;
+        padding-bottom: 200px;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .details {
+        font-size: 24px;
+        color: #999999;
+    }
+</style>
+
+<script>
+    var dom = require('@weex-module/dom');
+    var stream = require('@weex-module/stream');
+    var navigator = require('@weex-module/navigator');
+    var modal = require('@weex-module/modal');
+
+    //mock
+    var mock = {
+        "picurl": 'https://gw.alicdn.com/tps/TB1mYDWLXXXXXc7XXXXXXXXXXXX-265-265.png',
+        "name": "小马",
+        "mobile": "15677889900",
+        "address": "5号宿舍A座1203室",
+        "sex": 'female'
+    };
+
+    module.exports = {
+        data: {
+            hasInfo: false,
+            female: false,
+            picurl: '',
+            uname: '',
+            utel: '',
+            uaddress: '',
+            tags: [
+                {btnId: 'btnOne', state: 'default', btnValue: '尽量中午', isSelected: false},
+                {btnId: 'btnTwo', state: 'default', btnValue: '尽量晚上', isSelected: false},
+                {btnId: 'btnThree', state: 'default', btnValue: '明天送', isSelected: false},
+                {btnId: 'btnFour', state: 'default', btnValue: '包裹很大', isSelected: false}
+            ],
+            goods: [
+                {
+                    picId: 'picOne',
+                    src: 'https://img.alicdn.com/tps/i2/TB1CpD7IXXXXXbSXXXXUAkPJpXX-87-87.png',
+                    width: 110,
+                    height: 110,
+                    price: 2,
+                    showColor: 'gray',
+                    selected: false
+                },
+                {
+                    picId: 'picTwo',
+                    src: 'https://img.alicdn.com/tps/i2/TB1CpD7IXXXXXbSXXXXUAkPJpXX-87-87.png',
+                    width: 50,
+                    height: 110,
+                    price: 4,
+                    showColor: 'gray',
+                    selected: false
+                },
+                {
+                    picId: 'picThree',
+                    src: 'https://img.alicdn.com/tps/i2/TB1CpD7IXXXXXbSXXXXUAkPJpXX-87-87.png',
+                    width: 60,
+                    height: 120,
+                    price: 6,
+                    showColor: 'gray',
+                    selected: false
+                }
+            ],
+            selectTag: '', //前面三个Tag
+            otherInfo: '',//最后一个tag
+            finalTags: '',//tags最后选中的项
+            inputMessage: '',//输入框信息
+            tip: 2,//跑腿费
+            goodfees: 0,//商品费用
+            baseURL:''
+
+        },
+        computed: {
+            totalfees: function () {//总费用
+                return this.tip + this.goodfees;
+            }
+        },
+        created: function () {//在实例创建之后同步调用
+            this.$getConfig(function (config) {
+                var env = config.env;
+                if (env.platform == 'iOS') {
+                    var scale = env.scale;
+                    var deviceWidth = env.deviceWidth / scale;
+                    this.navBarHeight = 64.0 * 750.0 / deviceWidth;
+                }
+            }.bind(this));
+
+            //debugger;
+            var bundleUrl = this.$getConfig().bundleUrl;//http://localhost:63342/publishTask/index.html?page=dist/taskDetail.js
+            bundleUrl = new String(bundleUrl);
+            //console.log('hit', bundleUrl);
+            var nativeBase;
+            var isAndroidAssets = bundleUrl.indexOf('file://assets/') >= 0;
+
+            var isiOSAssets = bundleUrl.indexOf('file:///') >= 0 && bundleUrl.indexOf('WeexDemo.app') > 0;
+            if (isAndroidAssets) {
+                nativeBase = 'file://assets/';
+            }
+            else if (isiOSAssets) {
+                // file:///var/mobile/Containers/Bundle/Application/{id}/WeexDemo.app/
+                // file:///Users/{user}/Library/Developer/CoreSimulator/Devices/{id}/data/Containers/Bundle/Application/{id}/WeexDemo.app/
+                nativeBase = bundleUrl.substring(0, bundleUrl.lastIndexOf('/') + 1);
+            }
+            else {
+                var host = 'localhost:12580';
+                var matches = /\/\/([^\/]+?)\//.exec(this.$getConfig().bundleUrl);
+                if (matches && matches.length >= 2) {
+                    host = matches[1];
+                }
+                nativeBase = 'http://' + host + '/';
+            }
+            var h5Base = './index.html?page=';
+            // in Native
+            var base = nativeBase;
+            if (typeof window === 'object') {
+                // in Browser or WebView
+                base = h5Base;
+            }
+            this.baseURL = base;
+
+            //发送请求,渲染用户信息
+            if (mock) {
+                this.hasInfo = true;
+                this.picurl = mock.picurl
+                this.uname = mock.name;
+                this.utel = mock.mobile;
+                this.uaddress = mock.address;
+                this.female = (mock.sex === "female" ? true : false);
+            } else {
+                this.hasInfo = false;
+            }
+
+            //发送请求,渲染顺便带商品
+            stream.fetch({
+                method: 'GET',
+                url: "http://jsfiddle.net/echo/jsonp/?callback=anything&result=content_in_response",
+                type: 'jsonp'
+            }, function (data) {
+                console.log("success:" + data);//返回值data必须是object
+            }, function (error) {
+                console.log("fail:" + error);
+            });
+        },
+        ready: function () {//在编译结束和$el第一次插入文档之后调用
+            this.ctHeight = this.$getConfig().env.deviceHeight;
+            var btnNode = this.$el('btnThree');//获取元素
+            //更新第三个btn-tag的样式
+            dom.updateStyle(btnNode, {marginRight: 0});
+        },
+        methods: {
+            addSelfInfo: function () {
+                //跳转到另外一个页面
+                var params = {
+                    'url': this.baseURL+'dist/selfInfo.js?userId=1',
+                    'animated': 'true',
+                };
+                navigator.push(params, function (e) {
+                    //callback
+                    // alert('ok');
+                });
+                //填写玩信息后,返回
+
+            },
+            selectTag: function (event) {
+                //获取选中button的文本,并存储于数组
+                //debugger;
+                var self = this,
+                        target = event.target,
+                        id = target.attr.dataId,
+                        index = target.attr.dataIndex,
+                        parentNode = this.$(id),
+                        curTag = self.tags[index],
+                        len = self.tags.length - 1;
+                if (curTag.isSelected) {
+                    curTag.state = 'default';
+                    curTag.isSelected = false;
+                    if (index === len) {
+                        self.otherInfo = '';
+                    } else {
+                        self.selectTag = '';
+                    }
+                } else {
+                    curTag.state = 'active';
+                    curTag.isSelected = true;
+                    if (index === len) {
+                        self.otherInfo = parentNode.value;
+                    } else {
+                        self.selectTag = parentNode.value;
+                        //其他二个tag不在选中
+                        this.tags.forEach(function (items, curIndex) {
+                            if (curIndex !== index && curIndex !== len) {
+                                self.tags[curIndex].state = 'default';
+                                self.tags[curIndex].isSelected = false;
+                            }
+                        });
+                    }
+                }
+
+                this.finalTags = this.selectTag + ";" + this.otherInfo;
+            },
+            inputText: function (event) {
+                //获取输入框的内容,并存储
+                this.inputMessage = event.value;
+                //console.log(this.inputMessage);
+
+            },
+            selectGoods: function (e) {
+                //debugger;
+                //选择顺便带的商品,并存储
+                var id = e.target.attr.dataId,
+                        parentNode = this.$(id),
+                        price = parentNode.money;
+                if (parentNode.selected) {
+                    parentNode.color = 'gray';
+                    parentNode.selected = false;
+                    this.goodfees -= price;
+                } else {
+                    parentNode.color = 'orange';
+                    parentNode.selected = true;
+                    this.goodfees += price;
+
+                }
+
+            },
+            publishTask: function () {
+                //提交请求发布跑腿任务
+
+                //提交成功,跳转到任务详情页
+
+                if (this.inputMessage !== '') {
+                    modal.toast({'message': '发布成功!', 'duration': 1});
+                    var params={
+                        'url':this.baseURL+'dist/taskDetail.js',
+                        'animated':'true'
+                    }
+                    navigator.push(params,function () {
+
+                    });
+                }else{
+                    modal.toast({'message': '备注信息不能为空!', 'duration': 1});
+                }
+
+            }
+        }
+    }
+</script>
